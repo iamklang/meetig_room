@@ -31,12 +31,12 @@ import Foundation
 
 // You will set your application's clientId and redirect URI. You get
 // these when you register your application in Azure AD.
-let REDIRECT_URL_STRING = "ENTER_REDIRECT_URI_HERE"
-let CLIENT_ID           = "ENTER_CLIENT_ID_HERE"
+let REDIRECT_URL_STRING = "http://localhost:8000"
+let CLIENT_ID           = "768cda8a-6a82-49ed-bcda-00f71fe08cbe"
 let AUTHORITY           = "https://login.microsoftonline.com/common"
 
 class AuthenticationManager {
-    var redirectURL: NSURL
+    var redirectURL: URL
     var authority: String = ""
     var clientId: String = ""
     var dependencyResolver: ADALDependencyResolver
@@ -44,9 +44,9 @@ class AuthenticationManager {
     init () {
         // These are settings that you need to set based on your
         // client registration in Azure AD.
-        redirectURL = NSURL(string: REDIRECT_URL_STRING)!
-        authority = AUTHORITY
-        clientId = CLIENT_ID
+        redirectURL = URL(string: "http://localhost:8000")!
+        authority = "https://login.microsoftonline.com/common"
+        clientId = "768cda8a-6a82-49ed-bcda-00f71fe08cbe"
         dependencyResolver = ADALDependencyResolver()
     }
 
@@ -59,7 +59,7 @@ class AuthenticationManager {
     }
     
     // Acquire access and refresh tokens from Azure AD for the user
-    func acquireAuthTokenWithResourceId(resourceId: String, completionHandler:((Bool) -> Void)) {
+    func acquireAuthTokenWithResourceId(_ resourceId: String, completionHandler:((Bool) -> Void)) {
         var error: ADAuthenticationError?
         let authContext: ADAuthenticationContext = ADAuthenticationContext(authority: authority, error:&error)
       
@@ -70,7 +70,7 @@ class AuthenticationManager {
         // you didn't clear your token cache, the authentication manager will use the access or refresh
         // token in the cache to authenticate client requests.
         // This will result in a call to the service if you need to get an access token.
-
+/*
         authContext.acquireTokenWithResource(resourceId, clientId: clientId, redirectUri: redirectURL) {
             (result:ADAuthenticationResult!) -> Void in
 
@@ -87,6 +87,26 @@ class AuthenticationManager {
                 completionHandler(true)
             }
         }
+ */
+        authContext.acquireToken(withResource: resourceId, clientId: clientId, redirectUri: redirectURL) { (result:ADAuthenticationResult?) in
+            print("Resource ID : \(resourceId)")
+            print("Client ID : \(self.clientId)")
+            print("RedirecURI : \(self.redirectURL)")
+            print("Resultxxx : \(result?.status)")
+            if result?.status.rawValue != AD_SUCCEEDED.rawValue {
+                completionHandler(false)
+            }
+            else {
+                let userDefaults = UserDefaults.standard
+                
+                userDefaults.set(result?.tokenCacheStoreItem.userInformation.userId, forKey: "LogInUser")
+                userDefaults.synchronize()
+                
+                self.dependencyResolver = ADALDependencyResolver(context: authContext, resourceId: resourceId, clientId: self.clientId , redirectUri: self.redirectURL)
+                completionHandler(true)
+            }
+
+        }
     }
     
     // Clear the ADAL token cache and remove this application's cookies.
@@ -96,13 +116,13 @@ class AuthenticationManager {
 
         // Clear the token cache
         let allItemsArray = cache.allItemsWithError(&error)
-        if (!allItemsArray.isEmpty) {
+        if (!(allItemsArray?.isEmpty)!) {
             cache.removeAllWithError(&error)
         }
     
         // Remove all the cookies from this application's sandbox. The authorization code is stored in the
         // cookies and ADAL will try to get to access tokens based on auth code in the cookie.
-        let cookieStore = NSHTTPCookieStorage.sharedHTTPCookieStorage()
+        let cookieStore = HTTPCookieStorage.shared
         if let cookies = cookieStore.cookies {
             for cookie in cookies {
                 cookieStore.deleteCookie(cookie )

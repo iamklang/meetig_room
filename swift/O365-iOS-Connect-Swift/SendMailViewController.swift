@@ -46,13 +46,13 @@ class SendMailViewController: UIViewController {
         super.viewDidLoad()
 
         // Do any additional setup after loading the view, typically from a nib.
-        disconnectButton.enabled = false
-        sendMailButton.hidden = true
-        emailTextField.hidden = true
-        mainContentTextView.hidden = true
-        headerLabel.hidden = true
-        statusTextView.hidden = true
-        activityIndicator.hidden = true
+        disconnectButton.isEnabled = false
+        sendMailButton.isHidden = true
+        emailTextField.isHidden = true
+        mainContentTextView.isHidden = true
+        headerLabel.isHidden = true
+        statusTextView.isHidden = true
+        activityIndicator.isHidden = true
 
         connectToOffice365()
     }
@@ -73,7 +73,7 @@ class SendMailViewController: UIViewController {
             let servicesInfoFetcher = discoveryClient.getservices()
             
             // Call the Discovery Service and get back an array of service endpoint information
-            
+   /*
             let servicesTask = servicesInfoFetcher.readWithCallback{(serviceEndPointObjects:[AnyObject]!, error:MSODataException!) -> Void in
                 let serviceEndpoints = serviceEndPointObjects as! [MSDiscoveryServiceInfo]
                 
@@ -117,8 +117,51 @@ class SendMailViewController: UIViewController {
                     }
                 }
             }
-
-            servicesTask.resume()
+            */
+            let servicesTask = servicesInfoFetcher?.read(callback: { (serviceEndPointObjects:[Any]?, error:MSODataException?) in
+                if (self.serviceEndpointLookup.count > 0) {
+                    // Here is where we cache the service URLs returned by the Discovery Service. You may not
+                    // need to call the Discovery Service again until either this cache is removed, or you
+                    // get an error that indicates that the endpoint is no longer valid.
+                    
+                    var serviceEndpointLookup = [NSObject: AnyObject]()
+                    
+                    for serviceEndpoint in serviceEndpointLookup {
+                        
+                        //serviceEndpointLookup[serviceEndpoint.capability] = serviceEndpoint.serviceEndpointUri
+                        serviceEndpointLookup[serviceEndpoint.key] = serviceEndpoint.value
+                        
+                    }
+                    
+                    // Keep track of the service endpoints in the user defaults
+                    let userDefaults = UserDefaults.standard
+                    userDefaults.set(serviceEndpointLookup, forKey: "O365ServiceEndpoints")
+                    userDefaults.synchronize()
+                    
+                    DispatchQueue.main.async {
+                        let userEmail = userDefaults.string(forKey: "LogInUser")!
+                        //var parts = userEmail.componentsSeparatedByString("@")
+                        var parts = userEmail.components(separatedBy: "@")
+                        self.headerLabel.text = String(format:"Hi %@!", parts[0])
+                        self.headerLabel.isHidden = false
+                        self.mainContentTextView.isHidden = false
+                        self.emailTextField.text = userEmail
+                        self.statusTextView.text = ""
+                        self.disconnectButton.isEnabled = true
+                        self.sendMailButton.isHidden = false
+                        self.emailTextField.isHidden = false
+                    }
+                }
+                    
+                else {
+                    DispatchQueue.main.async {
+                        print("Error in the authentication: \(error)")
+                        let alert: UIAlertView = UIAlertView(title: "Error", message: "Authentication failed. This may be because the Internet connection is offline  or perhaps the credentials are incorrect. Check the log for errors and try again.", delegate: self, cancelButtonTitle: "OK")
+                        alert.show()
+                    }
+                }
+            })
+            servicesTask?.resume()
         }
     }
 
@@ -131,15 +174,15 @@ class SendMailViewController: UIViewController {
         baseController.fetchOutlookClient {
             (outlookClient) -> Void in
 
-            dispatch_async(dispatch_get_main_queue()) {
+            DispatchQueue.main.async {
                 // Show the activity indicator
-                self.activityIndicator.hidden = false
+                self.activityIndicator.isHidden = false
                 self.activityIndicator.startAnimating()
             }
             
             let userFetcher = outlookClient.getMe()
-            let userOperations = (userFetcher.operations as MSOutlookUserOperations)
-            
+            let userOperations = ((userFetcher?.operations)! as MSOutlookUserOperations)
+            /*
             let task = userOperations.sendMailWithMessage(message, saveToSentItems: true) {
                 (returnValue:Int32, error:MSODataException!) -> Void in
 
@@ -162,8 +205,30 @@ class SendMailViewController: UIViewController {
                     self.activityIndicator.hidden = true
                 }
             }
-
-            task.resume()
+            */
+            
+            let task = userOperations.sendMail(with: message, saveToSentItems: true, callback: { (returnValue:Int32, error:MSODataException?) in
+                var statusText: String
+                
+                if (error == nil) {
+                    statusText = "Check your inbox, you have a new message. :)"
+                }
+                else {
+                    statusText = "The email could not be sent. Check the log for errors."
+                    print(error?.localizedDescription)
+                    //NSLog("%@",[error?.localizedDescription])
+                }
+                
+                // Update the UI.
+                
+                DispatchQueue.main.async {
+                    self.statusTextView.text = statusText
+                    self.statusTextView.isHidden = false
+                    self.activityIndicator .stopAnimating()
+                    self.activityIndicator.isHidden = true
+                }
+            })
+            task?.resume()
         }
     }
 
@@ -171,7 +236,7 @@ class SendMailViewController: UIViewController {
     func buildMessage() -> MSOutlookMessage {
         // Create a new message. Set properties on the message.
         let  message: MSOutlookMessage  = MSOutlookMessage()
-        message.Subject = "Welcome to Office 365 development on iOS with the Office 365 Connect sample"
+        message.subject = "Welcome to Office 365 development on iOS with the Office 365 Connect sample"
 
         // Get the recipient's email address.
         // The ToRecipients property is an array of MSOulookRecipient objects.
@@ -179,33 +244,35 @@ class SendMailViewController: UIViewController {
         let toEmail = emailTextField.text
     
         let recipient = MSOutlookRecipient()
-        recipient.EmailAddress = MSOutlookEmailAddress()
-        recipient.EmailAddress.Address = toEmail!.stringByTrimmingCharactersInSet(NSCharacterSet.whitespaceCharacterSet())
-    
+        recipient.emailAddress = MSOutlookEmailAddress()
+        //recipient.emailAddress.address = toEmail.stringByTrimmingCharactersInSet(CharacterSet.whitespaceCharacterSet())
+        recipient.emailAddress.address = toEmail?.trimmingCharacters(in: CharacterSet.whitespaces)
+        
+        
         // The mutable array here is required to maintain compatibility with the API
         var recipientArray: [MSOutlookRecipient] = []
         recipientArray.append(recipient as MSOutlookRecipient)
         let mutableRecipientArray = NSMutableArray(array: recipientArray)
-        message.ToRecipients = mutableRecipientArray
+        message.toRecipients = mutableRecipientArray
 
         // Get the email text and put in the email body.
-        let filePath = NSBundle.mainBundle().pathForResource("EmailBody", ofType:"html")
-        let body = (try? NSString(contentsOfFile: filePath!, encoding: NSUTF8StringEncoding))?.stringByReplacingOccurrencesOfString("\"", withString: "\\\"");
+        let filePath = Bundle.main.path(forResource: "EmailBody", ofType:"html")
+        let body = (try? NSString(contentsOfFile: filePath!, encoding: String.Encoding.utf8.rawValue))?.replacingOccurrences(of: "\"", with: "\\\"");
         
-        message.Body = MSOutlookItemBody()
-        message.Body.ContentType = MSOutlookBodyType.BodyType_HTML
-        message.Body.Content = body! as String
+        message.body = MSOutlookItemBody()
+        message.body.contentType = MSOutlookBodyType.bodyType_HTML
+        message.body.content = body! as String
 
         return message
     }
 
-    @IBAction func disconnectBtnClicked(sender: AnyObject) {
-        disconnectButton.enabled = false
-        sendMailButton.hidden = true
+    @IBAction func disconnectBtnClicked(_ sender: AnyObject) {
+        disconnectButton.isEnabled = false
+        sendMailButton.isHidden = true
         mainContentTextView.text = "You're no longer connected to Office 365."
-        headerLabel.hidden = true
-        emailTextField.hidden = true
-        statusTextView.hidden = true
+        headerLabel.isHidden = true
+        emailTextField.isHidden = true
+        statusTextView.isHidden = true
         
         // Clear the access and refresh tokens from the credential cache. You need to clear cookies
         // since ADAL uses information stored in the cookies to get a new access token.
@@ -213,7 +280,7 @@ class SendMailViewController: UIViewController {
         authenticationManager.clearCredentials()
     }
 
-    @IBAction func sendMailBtnClicked(sender: AnyObject) {
+    @IBAction func sendMailBtnClicked(_ sender: AnyObject) {
         self.emailTextField.resignFirstResponder()
 
         sendMailMessage()

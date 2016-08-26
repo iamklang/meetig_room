@@ -16,6 +16,8 @@
 		952E24A51B0AA0A50089B710 /* O365ClientFetcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 952E24A41B0AA0A50089B710 /* O365ClientFetcher.swift */; };
 		95D883CB1B1381A300DD851C /* EmailBody.html in Resources */ = {isa = PBXBuildFile; fileRef = 95D883CA1B1381A300DD851C /* EmailBody.html */; };
 		AE015CAC727BB639E0379994 /* libPods-O365-iOS-Connect-Swift.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 90B85D21B25C884AA99B0BD0 /* libPods-O365-iOS-Connect-Swift.a */; };
+		BACE35F71D70711200A5C017 /* Authentication.swift in Sources */ = {isa = PBXBuildFile; fileRef = BACE35F61D70711100A5C017 /* Authentication.swift */; };
+		BACE35F91D70734200A5C017 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BACE35F81D70734200A5C017 /* ViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -33,6 +35,8 @@
 		952E24A21B0AA0880089B710 /* AuthenticationManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AuthenticationManager.swift; sourceTree = "<group>"; };
 		952E24A41B0AA0A50089B710 /* O365ClientFetcher.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = O365ClientFetcher.swift; sourceTree = "<group>"; };
 		95D883CA1B1381A300DD851C /* EmailBody.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = EmailBody.html; sourceTree = "<group>"; };
+		BACE35F61D70711100A5C017 /* Authentication.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Authentication.swift; sourceTree = "<group>"; };
+		BACE35F81D70734200A5C017 /* ViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -91,6 +95,8 @@
 				952E24A01B0AA0320089B710 /* SendMailViewController.swift */,
 				9AAD25101B1757F9009A6936 /* Resources */,
 				952E24461B0A92A20089B710 /* Supporting Files */,
+				BACE35F61D70711100A5C017 /* Authentication.swift */,
+				BACE35F81D70734200A5C017 /* ViewController.swift */,
 			);
 			path = "O365-iOS-Connect-Swift";
 			sourceTree = "<group>";
@@ -122,12 +128,12 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 952E24621B0A92A20089B710 /* Build configuration list for PBXNativeTarget "O365-iOS-Connect-Swift" */;
 			buildPhases = (
-				E6C7BF6C474C6C3FE9BF7FBF /* Check Pods Manifest.lock */,
+				E6C7BF6C474C6C3FE9BF7FBF /* [CP] Check Pods Manifest.lock */,
 				952E243F1B0A92A20089B710 /* Sources */,
 				952E24401B0A92A20089B710 /* Frameworks */,
 				952E24411B0A92A20089B710 /* Resources */,
-				0C65CE7BDBAA9DBBA54CBB49 /* Copy Pods Resources */,
-				FA7ABFDD6EE5EB5CAA9D86FB /* Embed Pods Frameworks */,
+				0C65CE7BDBAA9DBBA54CBB49 /* [CP] Copy Pods Resources */,
+				FA7ABFDD6EE5EB5CAA9D86FB /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -151,6 +157,9 @@
 				TargetAttributes = {
 					952E24421B0A92A20089B710 = {
 						CreatedOnToolsVersion = 6.3.1;
+						DevelopmentTeam = 9LC3FK263V;
+						LastSwiftMigration = 0800;
+						ProvisioningStyle = Automatic;
 					};
 				};
 			};
@@ -187,14 +196,14 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		0C65CE7BDBAA9DBBA54CBB49 /* Copy Pods Resources */ = {
+		0C65CE7BDBAA9DBBA54CBB49 /* [CP] Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputPaths = (
 			);
-			name = "Copy Pods Resources";
+			name = "[CP] Copy Pods Resources";
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -202,14 +211,14 @@
 			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-O365-iOS-Connect-Swift/Pods-O365-iOS-Connect-Swift-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
-		E6C7BF6C474C6C3FE9BF7FBF /* Check Pods Manifest.lock */ = {
+		E6C7BF6C474C6C3FE9BF7FBF /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputPaths = (
 			);
-			name = "Check Pods Manifest.lock";
+			name = "[CP] Check Pods Manifest.lock";
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -217,14 +226,14 @@
 			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
 			showEnvVarsInLog = 0;
 		};
-		FA7ABFDD6EE5EB5CAA9D86FB /* Embed Pods Frameworks */ = {
+		FA7ABFDD6EE5EB5CAA9D86FB /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputPaths = (
 			);
-			name = "Embed Pods Frameworks";
+			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -239,9 +248,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BACE35F91D70734200A5C017 /* ViewController.swift in Sources */,
 				952E24A31B0AA0880089B710 /* AuthenticationManager.swift in Sources */,
 				952E24491B0A92A20089B710 /* AppDelegate.swift in Sources */,
 				952E24A11B0AA0320089B710 /* SendMailViewController.swift in Sources */,
+				BACE35F71D70711200A5C017 /* Authentication.swift in Sources */,
 				952E24A51B0AA0A50089B710 /* O365ClientFetcher.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -306,7 +317,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = "$(SRCROOT)/**";
-				IPHONEOS_DEPLOYMENT_TARGET = 8.3;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
@@ -346,7 +357,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = "$(SRCROOT)/**";
-				IPHONEOS_DEPLOYMENT_TARGET = 8.3;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
 				SWIFT_OBJC_BRIDGING_HEADER = "O365-Connect-Bridging-Header.h";
@@ -359,11 +370,14 @@
 			baseConfigurationReference = 7307BBA639980E95CC67B04B /* Pods-O365-iOS-Connect-Swift.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				DEVELOPMENT_TEAM = 9LC3FK263V;
 				INFOPLIST_FILE = "O365-iOS-Connect-Swift/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "Microsoft.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "O365-iOS-Connect-Swift/O365-Connect-Bridging-Header.h";
+				SWIFT_VERSION = 3.0;
 			};
 			name = Debug;
 		};
@@ -372,11 +386,14 @@
 			baseConfigurationReference = 6DF25871C499CDFDE0C5106B /* Pods-O365-iOS-Connect-Swift.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				DEVELOPMENT_TEAM = 9LC3FK263V;
 				INFOPLIST_FILE = "O365-iOS-Connect-Swift/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "Microsoft.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "O365-iOS-Connect-Swift/O365-Connect-Bridging-Header.h";
+				SWIFT_VERSION = 3.0;
 			};
 			name = Release;
 		};
