@@ -5,7 +5,7 @@ source 'https://github.com/Cocoapods/Specs.git'
 target 'O365-iOS-Connect-Swift' do
 
 pod 'ADALiOS'
-pod 'Office365/Outlook', '= 0.9.1'
-pod 'Office365/Discovery', '= 0.9.1'
+pod 'Office365/Outlook'
+pod 'Office365/Discovery'
 
 end
